@@ -2,25 +2,26 @@ package com.example.springboottask.service;
 
 import com.example.springboottask.entity.Order;
 import com.example.springboottask.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-@Repository
+@Service
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Override
-    public List<Order> getOrders() {
-        return orderRepository.findAllOrders();
+    public OrderServiceImpl(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
     @Override
-    public List<Order> getUserOrders(int userId) {
+    public List<Order> getOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public List<Order> getUserOrders(Long userId) {
         return orderRepository.findOrdersByUserId(userId);
     }
 
@@ -30,17 +31,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(int id, BigDecimal price) {
-        orderRepository.updatePriceById(price, id);
+    public void updateOrder(Order order) {
+        orderRepository.save(order);
     }
 
     @Override
-    public Order getOrder(int orderId) {
-        return orderRepository.findOrderById(orderId);
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId).orElse(null);
     }
 
     @Override
-    public void deleteOrder(int orderId) {
-        orderRepository.deleteOrderById(orderId);
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
 }

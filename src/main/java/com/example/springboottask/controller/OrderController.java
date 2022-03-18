@@ -2,7 +2,6 @@ package com.example.springboottask.controller;
 
 import com.example.springboottask.entity.Order;
 import com.example.springboottask.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,19 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/orders")
 public class OrderController {
-    @Autowired
+    final
     OrderService orderService;
 
-    @GetMapping("/orders")
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @GetMapping("/")
     public List<Order> getOrders() {
 
         return orderService.getOrders();
     }
 
-    @GetMapping("/orders/{orderId}")
-    public Order getOrder(@PathVariable int orderId) {
+    @GetMapping("/{orderId}")
+    public Order getOrder(@PathVariable Long orderId) {
 
         Order order = orderService.getOrder(orderId);
 
@@ -38,22 +41,22 @@ public class OrderController {
         return order;
     }
 
-    @PostMapping("/orders")
+    @PostMapping("/")
     public Order addOrder(@RequestBody Order order) {
         orderService.saveOrder(order);
 
         return order;
     }
 
-    @PutMapping("/orders")
+    @PutMapping("/")
     public Order updateOrder(@RequestBody Order order) {
-        orderService.updateOrder(order.getId(), order.getPrice());
+        orderService.updateOrder(order);
         return getOrder(order.getId());
 
     }
 
-    @DeleteMapping("/orders/{orderId}")
-    public String deleteOrder(@PathVariable int orderId) {
+    @DeleteMapping("/{orderId}")
+    public String deleteOrder(@PathVariable Long orderId) {
         Order order = orderService.getOrder(orderId);
 
         if (order == null) {

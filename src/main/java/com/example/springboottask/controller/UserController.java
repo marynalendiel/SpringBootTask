@@ -4,7 +4,6 @@ import com.example.springboottask.entity.Order;
 import com.example.springboottask.entity.User;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,21 +16,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
-    @Autowired
+    final
     UserService userService;
 
-    @Autowired
+    final
     OrderService orderService;
 
-    @GetMapping(value = {"/users"})
+    public UserController(UserService userService, OrderService orderService) {
+        this.userService = userService;
+        this.orderService = orderService;
+    }
+
+    @GetMapping(value = {"/"})
     public List<User> getUsers() {
         return userService.getUsers();
     }
 
-    @GetMapping("/users/{userId}")
-    public User getUser(@PathVariable int userId) {
+    @GetMapping("/{userId}")
+    public User getUser(@PathVariable Long userId) {
 
         User user = userService.getUser(userId);
 
@@ -42,14 +46,14 @@ public class UserController {
         return user;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/")
     public User addUser(@RequestBody User user) {
         userService.saveUser(user);
 
         return user;
     }
 
-    @PutMapping("/users")
+    @PutMapping("/")
     public User updateUser(@RequestBody User user) {
 
         userService.updateUser(user);
@@ -58,8 +62,8 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/users/{userId}")
-    public String deleteUser(@PathVariable int userId) {
+    @DeleteMapping("/{userId}")
+    public String deleteUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
 
         if (user == null) {
@@ -70,8 +74,8 @@ public class UserController {
         return "Deleted user id - " + userId;
     }
 
-    @GetMapping("/users/{userId}/orders")
-    public List<Order> getUserOrders(@PathVariable int userId) {
+    @GetMapping("/{userId}/orders")
+    public List<Order> getUserOrders(@PathVariable Long userId) {
         return orderService.getUserOrders(userId);
     }
 

@@ -10,29 +10,15 @@ public class EntityResultRestExceptionHandler {
 
 	@ExceptionHandler(EntityResultNotFoundException.class)
 	public ResponseEntity<EntityResultErrorResponse> handleException(EntityResultErrorResponse exc) {
-
-		EntityResultErrorResponse error = new EntityResultErrorResponse(
-											HttpStatus.NOT_FOUND.value(),
-											exc.getMessage(),
-											System.currentTimeMillis());
+		EntityResultErrorResponse error = new EntityResultErrorResponse(HttpStatus.NOT_FOUND.value(), exc.getMessage(), System.currentTimeMillis());
 		
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<EntityResultErrorResponse> handleException(Exception exc) {
-
-		EntityResultErrorResponse error = new EntityResultErrorResponse(
-											HttpStatus.BAD_REQUEST.value(),
-											exc.getMessage(),
-											System.currentTimeMillis());
+		EntityResultErrorResponse error = new EntityResultErrorResponse(HttpStatus.BAD_REQUEST.value(), exc.getMessage(), System.currentTimeMillis());
 
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
-	
 }
-
-
-
-
-

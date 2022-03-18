@@ -2,19 +2,18 @@ package com.example.springboottask.service;
 
 import com.example.springboottask.entity.Order;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderService {
     List<Order> getOrders();
 
-    List<Order> getUserOrders(int userId);
+    List<Order> getUserOrders(Long userId);
 
-    void updateOrder(int id, BigDecimal price);
+    void updateOrder(Order order);
 
     void saveOrder(Order order);
 
-    Order getOrder(int orderId);
+    Order getOrder(Long orderId);
 
-    void deleteOrder(int orderId);
+    void deleteOrder(Long orderId);
 }

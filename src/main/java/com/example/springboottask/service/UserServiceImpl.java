@@ -2,20 +2,22 @@ package com.example.springboottask.service;
 
 import com.example.springboottask.entity.User;
 import com.example.springboottask.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> getUsers() {
-        return userRepository.findAllUsers();
+        return userRepository.findAll();
     }
 
     @Override
@@ -25,17 +27,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateUser(User user) {
-        userRepository.updateFirstNameAndLastNameAndEmailAndCityById(user.getFirstName(), user.getLastName(),
-                user.getEmail(), user.getCity(), user.getId());
+        userRepository.save(user);
     }
 
     @Override
-    public User getUser(int userId) {
-        return userRepository.findUserById(userId);
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 
     @Override
-    public void deleteUser(int userId) {
-        userRepository.deleteUserById(userId);
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
     }
 }
