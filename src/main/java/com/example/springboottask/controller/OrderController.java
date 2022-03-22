@@ -2,6 +2,7 @@ package com.example.springboottask.controller;
 
 import com.example.springboottask.entity.Order;
 import com.example.springboottask.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,13 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
-    final
-    OrderService orderService;
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+    private final OrderService orderService;
 
     @GetMapping("/")
     public List<Order> getOrders() {
@@ -50,8 +47,7 @@ public class OrderController {
 
     @PutMapping("/")
     public Order updateOrder(@RequestBody Order order) {
-        orderService.updateOrder(order);
-        return getOrder(order.getId());
+        return orderService.updateOrder(order);
 
     }
 

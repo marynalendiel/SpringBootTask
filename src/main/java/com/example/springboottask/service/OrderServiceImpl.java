@@ -2,18 +2,17 @@ package com.example.springboottask.service;
 
 import com.example.springboottask.entity.Order;
 import com.example.springboottask.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     @Override
     public List<Order> getOrders() {
@@ -31,8 +30,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(Order order) {
-        orderRepository.save(order);
+    public Order updateOrder(Order order) {
+        Order orderFromDb = orderRepository.getById(order.getId());
+
+        orderFromDb.setPrice(order.getPrice());
+        orderRepository.save(orderFromDb);
+
+        return orderFromDb;
     }
 
     @Override

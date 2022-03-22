@@ -4,6 +4,7 @@ import com.example.springboottask.entity.Order;
 import com.example.springboottask.entity.User;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,19 +18,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    final
-    UserService userService;
+    private final UserService userService;
 
-    final
-    OrderService orderService;
+    private final OrderService orderService;
 
-    public UserController(UserService userService, OrderService orderService) {
-        this.userService = userService;
-        this.orderService = orderService;
-    }
-
-    @GetMapping(value = {"/"})
+    @GetMapping
     public List<User> getUsers() {
         return userService.getUsers();
     }
@@ -46,20 +41,16 @@ public class UserController {
         return user;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public User addUser(@RequestBody User user) {
         userService.saveUser(user);
 
         return user;
     }
 
-    @PutMapping("/")
+    @PutMapping
     public User updateUser(@RequestBody User user) {
-
-        userService.updateUser(user);
-
-        return user;
-
+        return userService.updateUser(user);
     }
 
     @DeleteMapping("/{userId}")
@@ -78,5 +69,4 @@ public class UserController {
     public List<Order> getUserOrders(@PathVariable Long userId) {
         return orderService.getUserOrders(userId);
     }
-
 }

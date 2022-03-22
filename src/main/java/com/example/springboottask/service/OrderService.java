@@ -9,7 +9,7 @@ public interface OrderService {
 
     List<Order> getUserOrders(Long userId);
 
-    void updateOrder(Order order);
+    Order updateOrder(Order order);
 
     void saveOrder(Order order);
 
