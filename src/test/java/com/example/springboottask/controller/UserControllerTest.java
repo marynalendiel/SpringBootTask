@@ -5,33 +5,32 @@ import com.example.springboottask.entity.User;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@AutoConfigureJsonTesters
-@WebMvcTest(UserController.class)
+@WebMvcTest(UserController.class) //slice
 class UserControllerTest {
 
     @Autowired
@@ -46,11 +45,10 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    List<User> users = new ArrayList<>();
-    User user = new User();
-
     @Test
     void getUsers() throws Exception {
+        User user = createUser();
+        List<User> users = Collections.singletonList(user);
         when(userService.getUsers()).thenReturn(users);
 
         final String expectedResponseContent = objectMapper.writeValueAsString(users);
@@ -61,18 +59,33 @@ class UserControllerTest {
     }
 
     @Test
-    void getUser() throws Exception {
+    void shouldReturnUserWhenUserIdIsGiven() throws Exception {
+        //given
+        User user = createUser();
+        String expectedResponseContent = objectMapper.writeValueAsString(user);
+
         when(userService.getUser(2L)).thenReturn(user);
 
-        final String expectedResponseContent = objectMapper.writeValueAsString(user);
+        //when
         this.mockMvc.perform(get("/api/users/2"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseContent));
     }
 
+    private User createUser() {
+        User user = new User();
+        user.setId(2L);
+        user.setFirstName("Sara");
+        user.setLastName("Collins");
+        user.setEmail("sara@mail.com");
+        user.setCity("London");
+        return user;
+    }
+
     @Test
-    void addUser() throws Exception {
+    void shouldCreateUserWhenUserIsGiven() throws Exception {
+        User user = createUser();
         final String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(post("/api/users")
@@ -85,6 +98,7 @@ class UserControllerTest {
 
     @Test
     void updateUser() throws Exception {
+        User user = createUser();
         when(userService.updateUser(user)).thenReturn(user);
         final String jsonUser = objectMapper.writeValueAsString(user);
         this.mockMvc.perform(put("/api/users")
@@ -92,10 +106,12 @@ class UserControllerTest {
                         .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isOk());
+        verify(userService).updateUser(user);
     }
 
     @Test
     void deleteUser() throws Exception {
+        User user = createUser();
         when(userService.getUser(2L)).thenReturn(user);
 
         this.mockMvc

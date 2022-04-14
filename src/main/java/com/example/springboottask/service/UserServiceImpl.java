@@ -1,18 +1,20 @@
 package com.example.springboottask.service;
 
-import com.example.springboottask.controller.EntityResultNotFoundException;
 import com.example.springboottask.entity.User;
-import com.example.springboottask.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.springboottask.repository.UserRepo;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepo userRepository;
+
+    public UserServiceImpl(@Qualifier("jpa") UserRepo userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> getUsers() {
@@ -26,7 +28,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        User userFromDb = userRepository.getById(user.getId());
+        User userFromDb = userRepository.findById(user.getId());
+//        .get();
 
         userFromDb.setFirstName(user.getFirstName());
         userFromDb.setLastName(user.getLastName());
@@ -38,10 +41,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new EntityResultNotFoundException("User not found.."));
-
 //        return userRepository.findById(userId).orElseThrow(
+//                () -> new EntityResultNotFoundException("User not found.."));
+
+//        .orElseThrow(
 //                new Supplier<EntityResultNotFoundException>() {
 //                    @Override
 //                    public EntityResultNotFoundException get() {
@@ -49,6 +52,8 @@ public class UserServiceImpl implements UserService {
 //                    }
 //                }
 //        );
+
+        return userRepository.findById(userId);
     }
 
     @Override
