@@ -1,16 +1,16 @@
 package com.example.springboottask.repository;
 
-import com.example.springboottask.entity.User;
+import com.example.springboottask.entity.UserEntity;
 
 import java.util.List;
 
 public interface UserRepo {
 
-    List<User> findAll();
+    List<UserEntity> findAll();
 
-    void save(User user);
+    void save(UserEntity user);
 
-    User findById(Long userId);
+    UserEntity findById(Long userId);
 
     void deleteById(Long userId);
 }

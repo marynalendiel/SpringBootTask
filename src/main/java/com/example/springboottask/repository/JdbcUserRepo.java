@@ -1,6 +1,6 @@
 package com.example.springboottask.repository;
 
-import com.example.springboottask.entity.User;
+import com.example.springboottask.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,17 +9,17 @@ import java.util.List;
 public class JdbcUserRepo implements UserRepo {
 
     @Override
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void save(User user) {
+    public void save(UserEntity user) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public User findById(Long userId) {
+    public UserEntity findById(Long userId) {
         throw new UnsupportedOperationException();
     }
 

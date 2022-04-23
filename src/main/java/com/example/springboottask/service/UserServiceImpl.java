@@ -1,42 +1,52 @@
 package com.example.springboottask.service;
 
-import com.example.springboottask.entity.User;
-import com.example.springboottask.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.example.springboottask.converter.UserEntityConverter;
+import com.example.springboottask.entity.UserEntity;
+import com.example.springboottask.model.User;
+import com.example.springboottask.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepo userRepository;
+    private final UserRepository userRepository;
 
-    public UserServiceImpl(@Qualifier("jpa") UserRepo userRepository) {
+    private final UserEntityConverter userEntityConverter;
+
+    public UserServiceImpl(UserRepository userRepository, UserEntityConverter userEntityConverter) {
         this.userRepository = userRepository;
+        this.userEntityConverter = userEntityConverter;
     }
 
     @Override
     public List<User> getUsers() {
-        return userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findAll();
+        return userEntities.stream()
+                .map(userEntity -> userEntityConverter.convertToModel(userEntity))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void saveUser(User user) {
-        userRepository.save(user);
+        UserEntity userEntity = userEntityConverter.convertToEntity(user);
+        userRepository.save(userEntity);
     }
 
     @Override
     public User updateUser(User user) {
-        User userFromDb = userRepository.findById(user.getId());
-//        .get();
+        UserEntity userEntity = userEntityConverter.convertToEntity(user);
 
-        userFromDb.setFirstName(user.getFirstName());
-        userFromDb.setLastName(user.getLastName());
-        userFromDb.setCity(user.getCity());
+        UserEntity userFromDb = userRepository.findById(userEntity.getId()).get();
+
+        userFromDb.setFirstName(userEntity.getFirstName());
+        userFromDb.setLastName(userEntity.getLastName());
+        userFromDb.setCity(userEntity.getCity());
         userRepository.save(userFromDb);
 
-        return userFromDb;
+        return userEntityConverter.convertToModel(userFromDb);
     }
 
     @Override
@@ -52,8 +62,8 @@ public class UserServiceImpl implements UserService {
 //                    }
 //                }
 //        );
-
-        return userRepository.findById(userId);
+        UserEntity userEntity = userRepository.findById(userId).get();
+        return userEntityConverter.convertToModel(userEntity);
     }
 
     @Override
