@@ -1,5 +1,6 @@
 package com.example.springboottask.controller;
 
+import com.example.springboottask.converter.ConverterTestConfiguration;
 import com.example.springboottask.converter.OrderDtoConverter;
 import com.example.springboottask.converter.UserDtoConverter;
 import com.example.springboottask.converter.UserEntityConverter;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class) //slice
+@WebMvcTest(UserController.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class UserControllerTest {
 
     @Autowired
@@ -67,7 +70,6 @@ class UserControllerTest {
         final String expectedResponseContent = objectMapper.writeValueAsString(users);
 
         this.mockMvc.perform(get("/api/users"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseContent));
     }

@@ -1,23 +1,22 @@
 package com.example.springboottask.converter;
 
-import com.example.springboottask.dto.OrderDto;
 import com.example.springboottask.entity.OrderEntity;
-import com.example.springboottask.entity.UserEntity;
 import com.example.springboottask.model.Order;
-import com.example.springboottask.model.User;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@WebMvcTest(OrderEntityConverter.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class OrderEntityConverterTest {
-    @Autowired
-    ModelMapper modelMapper;
 
     @Autowired
     OrderEntityConverter orderEntityConverter;
@@ -33,10 +32,25 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        OrderEntity orderEntity = null;
-        Order actualOrder = orderEntityConverter.convertToModel(orderEntity);
+        Order actualOrder = orderEntityConverter.convertToModel(null);
 
         assertNull(actualOrder);
+    }
+
+    @Test
+    void shouldConvertToModelListIfEntityListIsGiven() {
+        List<OrderEntity> orderEntityList = Collections.singletonList(createOrderEntity());
+        List<Order> actualOrderList = orderEntityConverter.convertToModelList(orderEntityList);
+        List<Order> expectedOrderList = Collections.singletonList(createOrderModel());
+
+        assertEquals(expectedOrderList, actualOrderList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
+        List<Order> actualOrderList = orderEntityConverter.convertToModelList(null);
+
+        assertTrue(actualOrderList.isEmpty());
     }
 
     @Test
@@ -50,10 +64,25 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToEntity() {
-        Order order = null;
-        OrderEntity actualOrderEntity = orderEntityConverter.convertToEntity(order);
+        OrderEntity actualOrderEntity = orderEntityConverter.convertToEntity(null);
 
         assertNull(actualOrderEntity);
+    }
+
+    @Test
+    void shouldConvertToEntityListIfModelListIsGiven() {
+        List<Order> orders = Collections.singletonList(createOrderModel());
+        List<OrderEntity> actualOrderEntityList = orderEntityConverter.convertToEntityList(orders);
+        List<OrderEntity> expectedOrderEntityList = Collections.singletonList(createOrderEntity());
+
+        assertEquals(expectedOrderEntityList, actualOrderEntityList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToEntityList() {
+        List<OrderEntity> actualOrderEntityList = orderEntityConverter.convertToEntityList(null);
+
+        assertTrue(actualOrderEntityList.isEmpty());
     }
 
     private Order createOrderModel() {

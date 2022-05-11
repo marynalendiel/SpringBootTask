@@ -25,27 +25,19 @@ public class OrderController {
 
     private final OrderDtoConverter orderDtoConverter;
 
-    @GetMapping("/")
+    @GetMapping
     public List<OrderDto> getOrders() {
-        List<Order> orderList = orderService.getOrders();
-        return orderList.stream()
-                .map(order -> orderDtoConverter.convertToDto(order))
-                .collect(Collectors.toList());
+        List<Order> orders = orderService.getOrders();
+        return orderDtoConverter.convertToDtoList(orders);
     }
 
     @GetMapping("/{orderId}")
     public OrderDto getOrder(@PathVariable Long orderId) {
         Order order = orderService.getOrder(orderId);
-        OrderDto orderDto = orderDtoConverter.convertToDto(order);
-
-        if (orderDto == null) {
-            throw new EntityResultNotFoundException("order id not found - " + orderId);
-        }
-
-        return orderDto;
+        return orderDtoConverter.convertToDto(order);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
         Order order = orderDtoConverter.convertToModel(orderDto);
         orderService.saveOrder(order);
@@ -53,11 +45,11 @@ public class OrderController {
         return orderDto;
     }
 
-    @PutMapping("/")
+    @PutMapping
     public OrderDto updateOrder(@RequestBody OrderDto orderDto) {
-        Order requestOrder = orderDtoConverter.convertToModel(orderDto);
+        var requestOrder = orderDtoConverter.convertToModel(orderDto);
 
-        Order updatedOrder = orderService.updateOrder(requestOrder);
+        var updatedOrder = orderService.updateOrder(requestOrder);
         return orderDtoConverter.convertToDto(updatedOrder);
 
     }

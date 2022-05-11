@@ -3,26 +3,29 @@ package com.example.springboottask.converter;
 import com.example.springboottask.dto.OrderDto;
 import com.example.springboottask.model.Order;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@WebMvcTest(OrderDtoConverter.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class OrderDtoConverterTest {
 
     @Autowired
     OrderDtoConverter orderDtoConverter;
 
-    @Autowired
-    ModelMapper modelMapper;
-
     @Test
     void shouldConvertToDtoIfModelIsGiven() {
-        Order order = createOrderModel();
+        var order = createOrderModel();
         OrderDto actualOrderDto = orderDtoConverter.convertToDto(order);
         OrderDto expectedOrderDto = createOrderDto();
 
@@ -31,10 +34,25 @@ class OrderDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToDto() {
-        Order order = null;
-        OrderDto actualOrderDto = orderDtoConverter.convertToDto(order);
+        OrderDto actualOrderDto = orderDtoConverter.convertToDto(null);
 
         assertNull(actualOrderDto);
+    }
+
+    @Test
+    void shouldConvertToDtoListIfModelListIsGiven() {
+        var orders = Collections.singletonList(createOrderModel());
+        List<OrderDto> actualOrderDtoList = orderDtoConverter.convertToDtoList(orders);
+        List<OrderDto> expectedOrderDtoList = Collections.singletonList(createOrderDto());
+
+        assertEquals(expectedOrderDtoList, actualOrderDtoList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToDtoList() {
+        List<OrderDto> actualOrderDtoList = orderDtoConverter.convertToDtoList(null);
+
+        assertTrue(actualOrderDtoList.isEmpty());
     }
 
     @Test
@@ -48,10 +66,25 @@ class OrderDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        OrderDto orderDto = null;
-        Order actualOrderDto = orderDtoConverter.convertToModel(orderDto);
+        Order actualOrderDto = orderDtoConverter.convertToModel(null);
 
         assertNull(actualOrderDto);
+    }
+
+    @Test
+    void shouldConvertToModelListIfDtoListIsGiven() {
+        List<OrderDto> orderDtoList = Collections.singletonList(createOrderDto());
+        List<Order> actualOrderList = orderDtoConverter.convertToModelList(orderDtoList);
+        List<Order> expectedOrderList = Collections.singletonList(createOrderModel());
+
+        assertEquals(expectedOrderList, actualOrderList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
+        List<Order> actualOrderDtoList = orderDtoConverter.convertToModelList(null);
+
+        assertTrue(actualOrderDtoList.isEmpty());
     }
 
     private Order createOrderModel() {

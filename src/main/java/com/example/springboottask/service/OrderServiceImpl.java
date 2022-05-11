@@ -1,5 +1,6 @@
 package com.example.springboottask.service;
 
+import com.example.springboottask.controller.EntityResultNotFoundException;
 import com.example.springboottask.converter.OrderEntityConverter;
 import com.example.springboottask.entity.OrderEntity;
 import com.example.springboottask.model.Order;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,24 +22,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrders() {
-        List<OrderEntity> orderEntityList = orderRepository.findAll();
-        return orderEntityList.stream()
-                .map(orderEntity -> orderEntityConverter.convertToModel(orderEntity))
+        return orderRepository.findAll().stream()
+                .map(orderEntityConverter::convertToModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Order> getUserOrders(Long userId) {
-        List<OrderEntity> orderEntityList = orderRepository.findOrdersByUserId(userId);
-        return orderEntityList.stream()
-                .map(orderEntity -> orderEntityConverter.convertToModel(orderEntity))
+        return orderRepository.findOrdersByUserId(userId).stream()
+                .map(orderEntityConverter::convertToModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void saveOrder(Order order) {
-        OrderEntity orderEntity = orderEntityConverter.convertToEntity(order);
-        orderRepository.save(orderEntity);
+        orderRepository.save(orderEntityConverter.convertToEntity(order));
     }
 
     @Override
@@ -53,8 +52,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getOrder(Long orderId) {
-        OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
-        return orderEntityConverter.convertToModel(orderEntity);
+        OrderEntity orderEntity = orderRepository.findById(orderId).orElseThrow(() -> new EntityResultNotFoundException("Order not found"));
+        return Optional.ofNullable(orderEntityConverter.convertToModel(orderEntity))
+                .orElseThrow(() -> new EntityResultNotFoundException("order id not found - " + orderId));
     }
 
     @Override

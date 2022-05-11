@@ -1,19 +1,23 @@
 package com.example.springboottask.converter;
 
-import com.example.springboottask.dto.UserDto;
 import com.example.springboottask.entity.UserEntity;
 import com.example.springboottask.model.User;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.List;
 
-@WebMvcTest(UserEntityConverter.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class UserEntityConverterTest {
-    @Autowired
-    ModelMapper modelMapper;
 
     @Autowired
     UserEntityConverter userEntityConverter;
@@ -29,10 +33,25 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        UserEntity userEntity = null;
-        User actualUser = userEntityConverter.convertToModel(userEntity);
+        User actualUser = userEntityConverter.convertToModel(null);
 
         assertNull(actualUser);
+    }
+
+    @Test
+    void shouldConvertToModelListIfEntityListIsGiven() {
+        List<UserEntity> userEntityList = Collections.singletonList(createUserEntity());
+        List<User> actualUserList = userEntityConverter.convertToModelList(userEntityList);
+        List<User> expectedUserList = Collections.singletonList(createUserModel());
+
+        assertEquals(expectedUserList, actualUserList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
+        List<User> actualUserList = userEntityConverter.convertToModelList(null);
+
+        assertTrue(actualUserList.isEmpty());
     }
 
     @Test
@@ -46,10 +65,25 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToEntity() {
-        User user = null;
-        UserEntity actualUserEntity = userEntityConverter.convertToEntity(user);
+        UserEntity actualUserEntity = userEntityConverter.convertToEntity(null);
 
         assertNull(actualUserEntity);
+    }
+
+    @Test
+    void shouldConvertToEntityListIfModelListIsGiven() {
+        List<User> users = Collections.singletonList(createUserModel());
+        List<UserEntity> actualUserEntityList = userEntityConverter.convertToEntityList(users);
+        List<UserEntity> expectedUserEntityList = Collections.singletonList(createUserEntity());
+
+        assertEquals(expectedUserEntityList, actualUserEntityList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToEntityList() {
+        List<UserEntity> actualUserEntityList = userEntityConverter.convertToEntityList(null);
+
+        assertTrue(actualUserEntityList.isEmpty());
     }
 
     private User createUserModel() {

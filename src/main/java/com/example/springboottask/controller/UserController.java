@@ -9,18 +9,20 @@ import com.example.springboottask.model.User;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Validated
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -37,9 +39,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> getUsers() {
         List<User> users = userService.getUsers();
-        return users.stream()
-                .map(user -> userDtoConverter.convertToDto(user))
-                .collect(Collectors.toList());
+        return userDtoConverter.convertToDtoList(users);
     }
 
     @GetMapping("/{userId}")
@@ -56,14 +56,13 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto addUser(@RequestBody UserDto userDto) {
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
         userService.saveUser(userDtoConverter.convertToModel(userDto));
-
         return userDto;
     }
 
     @PutMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
+    public UserDto updateUser(@Valid @RequestBody UserDto userDto) {
         User user = userDtoConverter.convertToModel(userDto);
         User updatedUser = userService.updateUser(user);
         return userDtoConverter.convertToDto(updatedUser);
@@ -84,8 +83,7 @@ public class UserController {
     @GetMapping("/{userId}/orders")
     public List<OrderDto> getUserOrders(@PathVariable Long userId) {
         List<Order> orderList = orderService.getUserOrders(userId);
-        return orderList.stream()
-                .map(order -> orderDtoConverter.convertToDto(order))
-                .collect(Collectors.toList());
+
+        return orderDtoConverter.convertToDtoList(orderList);
     }
 }

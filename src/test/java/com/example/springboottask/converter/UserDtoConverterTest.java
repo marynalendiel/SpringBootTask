@@ -3,19 +3,24 @@ package com.example.springboottask.converter;
 import com.example.springboottask.dto.UserDto;
 import com.example.springboottask.model.User;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@WebMvcTest(UserDtoConverter.class)
+//@WebMvcTest(UserDtoConverter.class)
+//@Import(AppConfig.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class UserDtoConverterTest {
-    @Autowired
-    ModelMapper modelMapper;
 
     @Autowired
-    UserDtoConverter userDtoConverter;
+    private UserDtoConverter userDtoConverter;
 
     @Test
     void shouldConvertToDtoIfModelIsGiven() {
@@ -28,10 +33,25 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToDto() {
-        User user = null;
-        UserDto actualUserDto = userDtoConverter.convertToDto(user);
+        UserDto actualUserDto = userDtoConverter.convertToDto(null);
 
         assertNull(actualUserDto);
+    }
+
+    @Test
+    void shouldConvertToDtoListIfModelListIsGiven() {
+        List<User> users = Collections.singletonList(createUserModel());
+        List<UserDto> actualUserDtoList = userDtoConverter.convertToDtoList(users);
+        List<UserDto> expectedUserDtoList = Collections.singletonList(createUserDto());
+
+        assertEquals(expectedUserDtoList, actualUserDtoList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToDtoList() {
+        List<UserDto> actualUserDtoList = userDtoConverter.convertToDtoList(null);
+
+        assertTrue(actualUserDtoList.isEmpty());
     }
 
     @Test
@@ -45,10 +65,25 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        UserDto userDto = null;
-        User actualUserDto = userDtoConverter.convertToModel(userDto);
+        User actualUserDto = userDtoConverter.convertToModel(null);
 
         assertNull(actualUserDto);
+    }
+
+    @Test
+    void shouldConvertToModelListIfDtoListIsGiven() {
+        List<UserDto> userDtoList = Collections.singletonList(createUserDto());
+        List<User> actualUserList = userDtoConverter.convertToModelList(userDtoList);
+        List<User> expectedUserList = Collections.singletonList(createUserModel());
+
+        assertEquals(expectedUserList, actualUserList);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
+        List<User> actualUserDtoList = userDtoConverter.convertToModelList(null);
+
+        assertTrue(actualUserDtoList.isEmpty());
     }
 
     private User createUserModel() {

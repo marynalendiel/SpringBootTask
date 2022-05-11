@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity(name = "OrderEntity")
+@Entity
 @Table(name = "`order`")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,13 +29,13 @@ public class OrderEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "create_time")
+    @Column(name = "create_time", nullable = false)
     @CreationTimestamp
     private LocalDateTime createTime;
 

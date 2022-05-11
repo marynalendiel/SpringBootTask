@@ -9,8 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-//@MockitoSettings(strictness = Strictness.LENIENT) - read
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
@@ -32,25 +29,25 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    @SpyBean
+    @Mock
     UserEntityConverter userEntityConverter;
-
-    @SpyBean
-    ModelMapper modelMapper;
 
     //naming
     @Test
     void getUsers() {
+        List<UserEntity> expectedUserEntities = new ArrayList<>();
+        expectedUserEntities.add(createUserEntity());
         List<User> expectedUsers = new ArrayList<>();
-        expectedUsers.add(createUser());
+        expectedUsers.add(createUserModel());
 
-        doReturn(expectedUsers).when(userRepository).findAll();
+        doReturn(expectedUserEntities).when(userRepository).findAll();
+        when(userEntityConverter.convertToModel(expectedUserEntities.get(0))).thenReturn(expectedUsers.get(0));
 
         List<User> actualUsers = userService.getUsers();
         assertEquals(expectedUsers,actualUsers);
     }
 
-    private User createUser() {
+    private User createUserModel() {
         User user = new User();
         user.setFirstName("Sara");
         user.setLastName("Collins");
@@ -60,10 +57,19 @@ class UserServiceImplTest {
         return user;
     }
 
+    private UserEntity createUserEntity() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setFirstName("Sara");
+        userEntity.setLastName("Collins");
+        userEntity.setEmail("sara@mail.com");
+        userEntity.setCity("London");
+
+        return userEntity;
+    }
+
     @Test
     void saveUser() {
-        User user = createUser();
-        UserEntity userEntity = userEntityConverter.convertToEntity(user);
+        UserEntity userEntity = createUserEntity();
 
         when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
 
@@ -76,15 +82,19 @@ class UserServiceImplTest {
     
     @Test
     void getUser() {
-        UserEntity user = new UserEntity();
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(12L);
+        User user = new User();
         user.setId(12L);
 
-        when(userRepository.findById(user.getId()))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findById(userEntity.getId()))
+                .thenReturn(Optional.of(userEntity));
 
-        User found = userService.getUser(user.getId());
+        when(userEntityConverter.convertToModel(any(UserEntity.class))).thenReturn(user);
+
+        User found = userService.getUser(userEntity.getId());
         assertThat(found.getId())
-                .isEqualTo(user.getId());
+                .isEqualTo(userEntity.getId());
         // + verify
     }
 

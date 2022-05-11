@@ -1,5 +1,6 @@
 package com.example.springboottask.service;
 
+import com.example.springboottask.controller.EntityResultNotFoundException;
 import com.example.springboottask.converter.UserEntityConverter;
 import com.example.springboottask.entity.UserEntity;
 import com.example.springboottask.model.User;
@@ -7,7 +8,6 @@ import com.example.springboottask.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,9 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         List<UserEntity> userEntities = userRepository.findAll();
-        return userEntities.stream()
-                .map(userEntity -> userEntityConverter.convertToModel(userEntity))
-                .collect(Collectors.toList());
+        return userEntityConverter.convertToModelList(userEntities);
     }
 
     @Override
@@ -39,14 +37,16 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         UserEntity userEntity = userEntityConverter.convertToEntity(user);
 
-        UserEntity userFromDb = userRepository.findById(userEntity.getId()).get();
+        User userFromDb = userRepository.findById(userEntity.getId())
+                .map(userEntityConverter::convertToModel)
+                .orElseThrow(() -> new EntityResultNotFoundException("must updated user not found"));
 
         userFromDb.setFirstName(userEntity.getFirstName());
         userFromDb.setLastName(userEntity.getLastName());
         userFromDb.setCity(userEntity.getCity());
-        userRepository.save(userFromDb);
+        userRepository.save(userEntityConverter.convertToEntity(userFromDb));
 
-        return userEntityConverter.convertToModel(userFromDb);
+        return userFromDb;
     }
 
     @Override
@@ -62,8 +62,9 @@ public class UserServiceImpl implements UserService {
 //                    }
 //                }
 //        );
-        UserEntity userEntity = userRepository.findById(userId).get();
-        return userEntityConverter.convertToModel(userEntity);
+        return userRepository.findById(userId)
+                .map(userEntityConverter::convertToModel)
+                .orElseThrow(() -> new EntityResultNotFoundException("User not found"));
     }
 
     @Override
