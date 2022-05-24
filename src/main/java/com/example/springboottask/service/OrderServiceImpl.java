@@ -23,37 +23,37 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getOrders() {
         return orderRepository.findAll().stream()
-                .map(orderEntityConverter::convertToModel)
+                .map(orderEntityConverter::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Order> getUserOrders(Long userId) {
         return orderRepository.findOrdersByUserId(userId).stream()
-                .map(orderEntityConverter::convertToModel)
+                .map(orderEntityConverter::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void saveOrder(Order order) {
-        orderRepository.save(orderEntityConverter.convertToEntity(order));
+        orderRepository.save(orderEntityConverter.toEntity(order));
     }
 
     @Override
     public Order updateOrder(Order order) {
-        OrderEntity orderEntity = orderEntityConverter.convertToEntity(order);
+        OrderEntity orderEntity = orderEntityConverter.toEntity(order);
         OrderEntity orderFromDb = orderRepository.getById(orderEntity.getId());
 
         orderFromDb.setPrice(orderEntity.getPrice());
         orderRepository.save(orderFromDb);
 
-        return orderEntityConverter.convertToModel(orderFromDb);
+        return orderEntityConverter.toModel(orderFromDb);
     }
 
     @Override
     public Order getOrder(Long orderId) {
         OrderEntity orderEntity = orderRepository.findById(orderId).orElseThrow(() -> new EntityResultNotFoundException("Order not found"));
-        return Optional.ofNullable(orderEntityConverter.convertToModel(orderEntity))
+        return Optional.ofNullable(orderEntityConverter.toModel(orderEntity))
                 .orElseThrow(() -> new EntityResultNotFoundException("order id not found - " + orderId));
     }
 

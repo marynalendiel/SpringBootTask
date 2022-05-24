@@ -1,10 +1,8 @@
 package com.example.springboottask.converter;
 
-import com.example.springboottask.dto.UserDto;
 import com.example.springboottask.entity.UserEntity;
 import com.example.springboottask.model.User;
 import org.apache.commons.collections4.ListUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +15,7 @@ public class UserEntityConverter {
     @Autowired
     private OrderEntityConverter orderEntityConverter;
 
-    public User convertToModel(UserEntity userEntity) {
+    public User toModel(UserEntity userEntity) {
         User user = new User();
 
         if (userEntity != null) {
@@ -27,7 +25,7 @@ public class UserEntityConverter {
             user.setEmail(userEntity.getEmail());
             user.setCity(userEntity.getCity());
             user.setOrders(userEntity.getOrders().stream()
-                    .map(orderEntity -> orderEntityConverter.convertToModel(orderEntity))
+                    .map(orderEntity -> orderEntityConverter.toModel(orderEntity))
                     .collect(Collectors.toList()));
 
             return user;
@@ -35,14 +33,14 @@ public class UserEntityConverter {
         return null;
     }
 
-    public List<User> convertToModelList(List<UserEntity> userEntityList) {
+    public List<User> toModel(List<UserEntity> userEntityList) {
         return ListUtils.emptyIfNull(userEntityList).stream()
-                .map(this::convertToModel)
+                .map(this::toModel)
                 .collect(Collectors.toList());
 
     }
 
-    public UserEntity convertToEntity(User user) {
+    public UserEntity toEntity(User user) {
         UserEntity userEntity = new UserEntity();
 
         if (user != null) {
@@ -52,7 +50,7 @@ public class UserEntityConverter {
             userEntity.setEmail(user.getEmail());
             userEntity.setCity(user.getCity());
             userEntity.setOrders(user.getOrders().stream()
-                    .map(order -> orderEntityConverter.convertToEntity(order))
+                    .map(order -> orderEntityConverter.toEntity(order))
                     .collect(Collectors.toList()));
 
             return userEntity;
@@ -60,9 +58,9 @@ public class UserEntityConverter {
         return null;
     }
 
-    public List<UserEntity> convertToEntityList(List<User> users) {
+    public List<UserEntity> toEntity(List<User> users) {
         return ListUtils.emptyIfNull(users).stream()
-                .map(this::convertToEntity)
+                .map(this::toEntity)
                 .collect(Collectors.toList());
 
     }

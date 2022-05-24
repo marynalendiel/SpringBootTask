@@ -15,7 +15,7 @@ public class UserDtoConverter {
     @Autowired
     private OrderDtoConverter orderDtoConverter;
 
-    public UserDto convertToDto(User user) {
+    public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
 
         if (user != null) {
@@ -24,23 +24,21 @@ public class UserDtoConverter {
             userDto.setLastName(user.getLastName());
             userDto.setEmail(user.getEmail());
             userDto.setCity(user.getCity());
-            userDto.setOrders(user.getOrders().stream()
-                    .map(order -> orderDtoConverter.convertToDto(order))
-                    .collect(Collectors.toList()));
+            userDto.setOrders(orderDtoConverter.toDto(user.getOrders()));
 
             return userDto;
         }
         return null;
     }
 
-    public List<UserDto> convertToDtoList(List<User> users) {
+    public List<UserDto> toDto(List<User> users) {
         return ListUtils.emptyIfNull(users).stream()
-                .map(this::convertToDto)
+                .map(this::toDto)
                 .collect(Collectors.toList());
 
     }
 
-    public User convertToModel(UserDto userDto) {
+    public User toModel(UserDto userDto) {
         User user = new User();
 
         if (userDto != null) {
@@ -50,7 +48,7 @@ public class UserDtoConverter {
             user.setEmail(userDto.getEmail());
             user.setCity(userDto.getCity());
             user.setOrders(userDto.getOrders().stream()
-                    .map(orderDto -> orderDtoConverter.convertToModel(orderDto))
+                    .map(orderDto -> orderDtoConverter.toModel(orderDto))
                     .collect(Collectors.toList()));
 
             return user;
@@ -58,9 +56,9 @@ public class UserDtoConverter {
         return null;
     }
 
-    public List<User> convertToModelList(List<UserDto> userDtoList) {
+    public List<User> toModel(List<UserDto> userDtoList) {
         return ListUtils.emptyIfNull(userDtoList).stream()
-                .map(this::convertToModel)
+                .map(this::toModel)
                 .collect(Collectors.toList());
     }
 }

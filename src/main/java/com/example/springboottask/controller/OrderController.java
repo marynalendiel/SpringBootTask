@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -28,18 +27,18 @@ public class OrderController {
     @GetMapping
     public List<OrderDto> getOrders() {
         List<Order> orders = orderService.getOrders();
-        return orderDtoConverter.convertToDtoList(orders);
+        return orderDtoConverter.toDto(orders);
     }
 
     @GetMapping("/{orderId}")
     public OrderDto getOrder(@PathVariable Long orderId) {
         Order order = orderService.getOrder(orderId);
-        return orderDtoConverter.convertToDto(order);
+        return orderDtoConverter.toDto(order);
     }
 
     @PostMapping
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
-        Order order = orderDtoConverter.convertToModel(orderDto);
+        Order order = orderDtoConverter.toModel(orderDto);
         orderService.saveOrder(order);
 
         return orderDto;
@@ -47,10 +46,10 @@ public class OrderController {
 
     @PutMapping
     public OrderDto updateOrder(@RequestBody OrderDto orderDto) {
-        var requestOrder = orderDtoConverter.convertToModel(orderDto);
+        var requestOrder = orderDtoConverter.toModel(orderDto);
 
         var updatedOrder = orderService.updateOrder(requestOrder);
-        return orderDtoConverter.convertToDto(updatedOrder);
+        return orderDtoConverter.toDto(updatedOrder);
 
     }
 

@@ -24,7 +24,7 @@ class OrderEntityConverterTest {
     @Test
     void shouldConvertToModelIfEntityIsGiven() {
         OrderEntity orderEntity = createOrderEntity();
-        Order actualOrder = orderEntityConverter.convertToModel(orderEntity);
+        Order actualOrder = orderEntityConverter.toModel(orderEntity);
         Order expectedOrder = createOrderModel();
 
         assertEquals(expectedOrder, actualOrder);
@@ -32,7 +32,7 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        Order actualOrder = orderEntityConverter.convertToModel(null);
+        Order actualOrder = orderEntityConverter.toModel((OrderEntity) null);
 
         assertNull(actualOrder);
     }
@@ -40,7 +40,7 @@ class OrderEntityConverterTest {
     @Test
     void shouldConvertToModelListIfEntityListIsGiven() {
         List<OrderEntity> orderEntityList = Collections.singletonList(createOrderEntity());
-        List<Order> actualOrderList = orderEntityConverter.convertToModelList(orderEntityList);
+        List<Order> actualOrderList = orderEntityConverter.toModel(orderEntityList);
         List<Order> expectedOrderList = Collections.singletonList(createOrderModel());
 
         assertEquals(expectedOrderList, actualOrderList);
@@ -48,7 +48,7 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
-        List<Order> actualOrderList = orderEntityConverter.convertToModelList(null);
+        List<Order> actualOrderList = orderEntityConverter.toModel((List<OrderEntity>) null);
 
         assertTrue(actualOrderList.isEmpty());
     }
@@ -56,7 +56,7 @@ class OrderEntityConverterTest {
     @Test
     void shouldConvertToEntityIfModelIsGiven() {
         Order order = createOrderModel();
-        OrderEntity actualOrderEntity = orderEntityConverter.convertToEntity(order);
+        OrderEntity actualOrderEntity = orderEntityConverter.toEntity(order);
         OrderEntity expectedOrderEntity = createOrderEntity();
 
         assertEquals(expectedOrderEntity, actualOrderEntity);
@@ -64,7 +64,7 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToEntity() {
-        OrderEntity actualOrderEntity = orderEntityConverter.convertToEntity(null);
+        OrderEntity actualOrderEntity = orderEntityConverter.toEntity((Order) null);
 
         assertNull(actualOrderEntity);
     }
@@ -72,7 +72,7 @@ class OrderEntityConverterTest {
     @Test
     void shouldConvertToEntityListIfModelListIsGiven() {
         List<Order> orders = Collections.singletonList(createOrderModel());
-        List<OrderEntity> actualOrderEntityList = orderEntityConverter.convertToEntityList(orders);
+        List<OrderEntity> actualOrderEntityList = orderEntityConverter.toEntity(orders);
         List<OrderEntity> expectedOrderEntityList = Collections.singletonList(createOrderEntity());
 
         assertEquals(expectedOrderEntityList, actualOrderEntityList);
@@ -80,7 +80,7 @@ class OrderEntityConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToEntityList() {
-        List<OrderEntity> actualOrderEntityList = orderEntityConverter.convertToEntityList(null);
+        List<OrderEntity> actualOrderEntityList = orderEntityConverter.toEntity((List<Order>) null);
 
         assertTrue(actualOrderEntityList.isEmpty());
     }
@@ -90,6 +90,7 @@ class OrderEntityConverterTest {
         order.setId(1L);
         order.setUserId(2L);
         order.setPrice(BigDecimal.valueOf(123));
+
         return order;
     }
 
@@ -98,6 +99,7 @@ class OrderEntityConverterTest {
         orderEntity.setId(1L);
         orderEntity.setUserId(2L);
         orderEntity.setPrice(BigDecimal.valueOf(123));
+
         return orderEntity;
     }
 }

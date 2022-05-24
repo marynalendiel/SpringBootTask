@@ -26,25 +26,66 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private UserServiceImpl userService;
-
     @Mock
     UserEntityConverter userEntityConverter;
 
-    //naming
+    @InjectMocks
+    private UserServiceImpl userService;
+
     @Test
-    void getUsers() {
+    void shouldReturnUserList() {
         List<UserEntity> expectedUserEntities = new ArrayList<>();
         expectedUserEntities.add(createUserEntity());
         List<User> expectedUsers = new ArrayList<>();
         expectedUsers.add(createUserModel());
 
         doReturn(expectedUserEntities).when(userRepository).findAll();
-        when(userEntityConverter.convertToModel(expectedUserEntities.get(0))).thenReturn(expectedUsers.get(0));
+        when(userEntityConverter.toModel(expectedUserEntities)).thenReturn(expectedUsers);
 
         List<User> actualUsers = userService.getUsers();
-        assertEquals(expectedUsers,actualUsers);
+        assertEquals(expectedUsers, actualUsers);
+    }
+
+    @Test
+    void shouldSaveUserWhenUserIsGiven() {
+        UserEntity userEntity = createUserEntity();
+
+        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+
+        UserEntity savedUser = userRepository.save(userEntity);
+        assertThat(savedUser.getFirstName()).isNotNull();
+        assertThat(savedUser.getLastName()).isNotNull();
+        assertThat(savedUser.getEmail()).isNotNull();
+        assertThat(savedUser.getCity()).isNotNull();
+    }
+    
+    @Test
+    void shouldReturnUserWhenIdIsGiven() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(12L);
+        User user = new User();
+        user.setId(12L);
+
+        when(userRepository.findById(userEntity.getId()))
+                .thenReturn(Optional.of(userEntity));
+
+        when(userEntityConverter.toModel(any(UserEntity.class))).thenReturn(user);
+
+        User found = userService.getUser(userEntity.getId());
+        assertThat(found.getId())
+                .isEqualTo(userEntity.getId());
+        // + verify
+    }
+
+    @Test
+    void shouldDeleteUserWhenIdIsGiven() {
+        Long userId = 12L;
+
+        // create the instance we will test and give it our mock
+        userService.deleteUser(12L);
+
+        // check that the expected methods were called
+        verify(userRepository).deleteById(userId);
     }
 
     private User createUserModel() {
@@ -66,48 +107,4 @@ class UserServiceImplTest {
 
         return userEntity;
     }
-
-    @Test
-    void saveUser() {
-        UserEntity userEntity = createUserEntity();
-
-        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-
-        UserEntity savedUser = userRepository.save(userEntity);
-        assertThat(savedUser.getFirstName()).isNotNull();
-        assertThat(savedUser.getLastName()).isNotNull();
-        assertThat(savedUser.getEmail()).isNotNull();
-        assertThat(savedUser.getCity()).isNotNull();
-    }
-    
-    @Test
-    void getUser() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(12L);
-        User user = new User();
-        user.setId(12L);
-
-        when(userRepository.findById(userEntity.getId()))
-                .thenReturn(Optional.of(userEntity));
-
-        when(userEntityConverter.convertToModel(any(UserEntity.class))).thenReturn(user);
-
-        User found = userService.getUser(userEntity.getId());
-        assertThat(found.getId())
-                .isEqualTo(userEntity.getId());
-        // + verify
-    }
-
-    @Test
-    void deleteUser() {
-        Long userId = 12L;
-
-        // create the instance we will test and give it our mock
-        userService.deleteUser(12L);
-
-        // check that the expected methods were called
-        verify(userRepository).deleteById(userId);
-    }
 }
-//naming + verify + check all
-//read about first + kiss

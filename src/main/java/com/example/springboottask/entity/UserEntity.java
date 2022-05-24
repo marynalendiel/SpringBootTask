@@ -45,7 +45,7 @@ public class UserEntity {
     @Column(name = "city", nullable = false, length = 45)
     private String city;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private List<OrderEntity> orders = new ArrayList<>();
 

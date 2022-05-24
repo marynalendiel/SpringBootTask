@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
 public class ConverterTestConfiguration {
-
     @Bean
     public OrderDtoConverter orderDtoConverter() {
         return new OrderDtoConverter();

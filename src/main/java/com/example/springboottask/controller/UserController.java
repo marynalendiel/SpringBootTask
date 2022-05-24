@@ -39,14 +39,14 @@ public class UserController {
     @GetMapping
     public List<UserDto> getUsers() {
         List<User> users = userService.getUsers();
-        return userDtoConverter.convertToDtoList(users);
+        return userDtoConverter.toDto(users);
     }
 
     @GetMapping("/{userId}")
     public UserDto getUser(@PathVariable Long userId) {
 
         User user = userService.getUser(userId);
-        UserDto userDto = userDtoConverter.convertToDto(user);
+        UserDto userDto = userDtoConverter.toDto(user);
 
         if (userDto == null) {
             throw new EntityResultNotFoundException("User id not found - " + userId);
@@ -57,15 +57,15 @@ public class UserController {
 
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {
-        userService.saveUser(userDtoConverter.convertToModel(userDto));
+        userService.saveUser(userDtoConverter.toModel(userDto));
         return userDto;
     }
 
     @PutMapping
     public UserDto updateUser(@Valid @RequestBody UserDto userDto) {
-        User user = userDtoConverter.convertToModel(userDto);
+        User user = userDtoConverter.toModel(userDto);
         User updatedUser = userService.updateUser(user);
-        return userDtoConverter.convertToDto(updatedUser);
+        return userDtoConverter.toDto(updatedUser);
     }
 
     @DeleteMapping("/{userId}")
@@ -84,6 +84,6 @@ public class UserController {
     public List<OrderDto> getUserOrders(@PathVariable Long userId) {
         List<Order> orderList = orderService.getUserOrders(userId);
 
-        return orderDtoConverter.convertToDtoList(orderList);
+        return orderDtoConverter.toDto(orderList);
     }
 }

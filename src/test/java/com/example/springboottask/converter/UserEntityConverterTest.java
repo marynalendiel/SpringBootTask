@@ -25,7 +25,7 @@ class UserEntityConverterTest {
     @Test
     void shouldConvertToModelIfEntityIsGiven() {
         UserEntity userEntity = createUserEntity();
-        User actualUser = userEntityConverter.convertToModel(userEntity);
+        User actualUser = userEntityConverter.toModel(userEntity);
         User expectedUser = createUserModel();
 
         assertEquals(expectedUser, actualUser);
@@ -33,7 +33,7 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        User actualUser = userEntityConverter.convertToModel(null);
+        User actualUser = userEntityConverter.toModel((UserEntity) null);
 
         assertNull(actualUser);
     }
@@ -41,7 +41,7 @@ class UserEntityConverterTest {
     @Test
     void shouldConvertToModelListIfEntityListIsGiven() {
         List<UserEntity> userEntityList = Collections.singletonList(createUserEntity());
-        List<User> actualUserList = userEntityConverter.convertToModelList(userEntityList);
+        List<User> actualUserList = userEntityConverter.toModel(userEntityList);
         List<User> expectedUserList = Collections.singletonList(createUserModel());
 
         assertEquals(expectedUserList, actualUserList);
@@ -49,7 +49,7 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
-        List<User> actualUserList = userEntityConverter.convertToModelList(null);
+        List<User> actualUserList = userEntityConverter.toModel((List<UserEntity>) null);
 
         assertTrue(actualUserList.isEmpty());
     }
@@ -57,7 +57,7 @@ class UserEntityConverterTest {
     @Test
     void shouldConvertToEntityIfModelIsGiven() {
         User user = createUserModel();
-        UserEntity actualUserEntity = userEntityConverter.convertToEntity(user);
+        UserEntity actualUserEntity = userEntityConverter.toEntity(user);
         UserEntity expectedUserEntity = createUserEntity();
 
         assertEquals(expectedUserEntity, actualUserEntity);
@@ -65,7 +65,7 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToEntity() {
-        UserEntity actualUserEntity = userEntityConverter.convertToEntity(null);
+        UserEntity actualUserEntity = userEntityConverter.toEntity((User) null);
 
         assertNull(actualUserEntity);
     }
@@ -73,7 +73,7 @@ class UserEntityConverterTest {
     @Test
     void shouldConvertToEntityListIfModelListIsGiven() {
         List<User> users = Collections.singletonList(createUserModel());
-        List<UserEntity> actualUserEntityList = userEntityConverter.convertToEntityList(users);
+        List<UserEntity> actualUserEntityList = userEntityConverter.toEntity(users);
         List<UserEntity> expectedUserEntityList = Collections.singletonList(createUserEntity());
 
         assertEquals(expectedUserEntityList, actualUserEntityList);
@@ -81,7 +81,7 @@ class UserEntityConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToEntityList() {
-        List<UserEntity> actualUserEntityList = userEntityConverter.convertToEntityList(null);
+        List<UserEntity> actualUserEntityList = userEntityConverter.toEntity((List<User>) null);
 
         assertTrue(actualUserEntityList.isEmpty());
     }
@@ -93,6 +93,7 @@ class UserEntityConverterTest {
         user.setLastName("Collins");
         user.setEmail("sara@mail.com");
         user.setCity("London");
+
         return user;
     }
 
@@ -103,6 +104,7 @@ class UserEntityConverterTest {
         userEntity.setLastName("Collins");
         userEntity.setEmail("sara@mail.com");
         userEntity.setCity("London");
+
         return userEntity;
     }
 }

@@ -3,9 +3,6 @@ package com.example.springboottask.converter;
 import com.example.springboottask.entity.OrderEntity;
 import com.example.springboottask.model.Order;
 import org.apache.commons.collections4.ListUtils;
-import org.aspectj.weaver.ast.Or;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.stream.Collectors;
 @Component
 public class OrderEntityConverter {
 
-    public Order convertToModel(OrderEntity orderEntity) {
+    public Order toModel(OrderEntity orderEntity) {
         Order order = new Order();
 
         if (orderEntity != null) {
@@ -28,13 +25,13 @@ public class OrderEntityConverter {
         return null;
     }
 
-    public List<Order> convertToModelList(List<OrderEntity> orderEntityList) {
+    public List<Order> toModel(List<OrderEntity> orderEntityList) {
         return ListUtils.emptyIfNull(orderEntityList).stream()
-                .map(this::convertToModel)
+                .map(this::toModel)
                 .collect(Collectors.toList());
     }
 
-    public OrderEntity convertToEntity(Order order) {
+    public OrderEntity toEntity(Order order) {
         OrderEntity orderEntity = new OrderEntity();
 
         if (order != null) {
@@ -48,9 +45,9 @@ public class OrderEntityConverter {
         return null;
     }
 
-    public List<OrderEntity> convertToEntityList (List<Order> orders) {
+    public List<OrderEntity> toEntity(List<Order> orders) {
         return ListUtils.emptyIfNull(orders).stream()
-                .map(this::convertToEntity)
+                .map(this::toEntity)
                 .collect(Collectors.toList());
     }
 }

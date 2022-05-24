@@ -13,8 +13,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@WebMvcTest(UserDtoConverter.class)
-//@Import(AppConfig.class)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ConverterTestConfiguration.class)
 class UserDtoConverterTest {
@@ -25,7 +23,7 @@ class UserDtoConverterTest {
     @Test
     void shouldConvertToDtoIfModelIsGiven() {
         User user = createUserModel();
-        UserDto actualUserDto = userDtoConverter.convertToDto(user);
+        UserDto actualUserDto = userDtoConverter.toDto(user);
         UserDto expectedUserDto = createUserDto();
 
         assertEquals(expectedUserDto, actualUserDto);
@@ -33,7 +31,7 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToDto() {
-        UserDto actualUserDto = userDtoConverter.convertToDto(null);
+        UserDto actualUserDto = userDtoConverter.toDto((User) null);
 
         assertNull(actualUserDto);
     }
@@ -41,7 +39,7 @@ class UserDtoConverterTest {
     @Test
     void shouldConvertToDtoListIfModelListIsGiven() {
         List<User> users = Collections.singletonList(createUserModel());
-        List<UserDto> actualUserDtoList = userDtoConverter.convertToDtoList(users);
+        List<UserDto> actualUserDtoList = userDtoConverter.toDto(users);
         List<UserDto> expectedUserDtoList = Collections.singletonList(createUserDto());
 
         assertEquals(expectedUserDtoList, actualUserDtoList);
@@ -49,7 +47,7 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToDtoList() {
-        List<UserDto> actualUserDtoList = userDtoConverter.convertToDtoList(null);
+        List<UserDto> actualUserDtoList = userDtoConverter.toDto((List<User>) null);
 
         assertTrue(actualUserDtoList.isEmpty());
     }
@@ -57,7 +55,7 @@ class UserDtoConverterTest {
     @Test
     void shouldConvertToModelIfDtoIsGiven() {
         UserDto userDto = createUserDto();
-        User actualUser = userDtoConverter.convertToModel(userDto);
+        User actualUser = userDtoConverter.toModel(userDto);
         User expectedUser = createUserModel();
 
         assertEquals(expectedUser, actualUser);
@@ -65,7 +63,7 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnNullIfNullIsGivenToConvertToModel() {
-        User actualUserDto = userDtoConverter.convertToModel(null);
+        User actualUserDto = userDtoConverter.toModel((UserDto) null);
 
         assertNull(actualUserDto);
     }
@@ -73,7 +71,7 @@ class UserDtoConverterTest {
     @Test
     void shouldConvertToModelListIfDtoListIsGiven() {
         List<UserDto> userDtoList = Collections.singletonList(createUserDto());
-        List<User> actualUserList = userDtoConverter.convertToModelList(userDtoList);
+        List<User> actualUserList = userDtoConverter.toModel(userDtoList);
         List<User> expectedUserList = Collections.singletonList(createUserModel());
 
         assertEquals(expectedUserList, actualUserList);
@@ -81,7 +79,7 @@ class UserDtoConverterTest {
 
     @Test
     void shouldReturnEmptyListIfNullIsGivenToConvertToModelList() {
-        List<User> actualUserDtoList = userDtoConverter.convertToModelList(null);
+        List<User> actualUserDtoList = userDtoConverter.toModel((List<UserDto>) null);
 
         assertTrue(actualUserDtoList.isEmpty());
     }
@@ -93,6 +91,7 @@ class UserDtoConverterTest {
         user.setLastName("Collins");
         user.setEmail("sara@mail.com");
         user.setCity("London");
+
         return user;
     }
 
@@ -103,6 +102,7 @@ class UserDtoConverterTest {
         userDto.setLastName("Collins");
         userDto.setEmail("sara@mail.com");
         userDto.setCity("London");
+
         return userDto;
     }
 }

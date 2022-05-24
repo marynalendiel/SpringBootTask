@@ -24,31 +24,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         List<UserEntity> userEntities = userRepository.findAll();
-        return userEntityConverter.convertToModelList(userEntities);
+        return userEntityConverter.toModel(userEntities);
     }
 
-    @Override
-    public void saveUser(User user) {
-        UserEntity userEntity = userEntityConverter.convertToEntity(user);
-        userRepository.save(userEntity);
-    }
-
-    @Override
-    public User updateUser(User user) {
-        UserEntity userEntity = userEntityConverter.convertToEntity(user);
-
-        User userFromDb = userRepository.findById(userEntity.getId())
-                .map(userEntityConverter::convertToModel)
-                .orElseThrow(() -> new EntityResultNotFoundException("must updated user not found"));
-
-        userFromDb.setFirstName(userEntity.getFirstName());
-        userFromDb.setLastName(userEntity.getLastName());
-        userFromDb.setCity(userEntity.getCity());
-        userRepository.save(userEntityConverter.convertToEntity(userFromDb));
-
-        return userFromDb;
-    }
-
+    @Snapshot
     @Override
     public User getUser(Long userId) {
 //        return userRepository.findById(userId).orElseThrow(
@@ -63,8 +42,31 @@ public class UserServiceImpl implements UserService {
 //                }
 //        );
         return userRepository.findById(userId)
-                .map(userEntityConverter::convertToModel)
+                .map(userEntityConverter::toModel)
                 .orElseThrow(() -> new EntityResultNotFoundException("User not found"));
+    }
+
+    @Snapshot
+    @Override
+    public void saveUser(User user) {
+        UserEntity userEntity = userEntityConverter.toEntity(user);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        UserEntity userEntity = userEntityConverter.toEntity(user);
+
+        User userFromDb = userRepository.findById(userEntity.getId())
+                .map(userEntityConverter::toModel)
+                .orElseThrow(() -> new EntityResultNotFoundException("must updated user not found"));
+
+        userFromDb.setFirstName(userEntity.getFirstName());
+        userFromDb.setLastName(userEntity.getLastName());
+        userFromDb.setCity(userEntity.getCity());
+        userRepository.save(userEntityConverter.toEntity(userFromDb));
+
+        return userFromDb;
     }
 
     @Override
