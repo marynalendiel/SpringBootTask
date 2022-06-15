@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
         this.userEntityConverter = userEntityConverter;
     }
 
+    @Snapshot
     @Override
     public List<User> getUsers() {
         List<UserEntity> userEntities = userRepository.findAll();

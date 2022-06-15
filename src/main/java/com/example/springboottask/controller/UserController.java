@@ -6,6 +6,7 @@ import com.example.springboottask.dto.OrderDto;
 import com.example.springboottask.dto.UserDto;
 import com.example.springboottask.model.Order;
 import com.example.springboottask.model.User;
+import com.example.springboottask.service.CustomInvocationHandler;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 @Validated
@@ -38,7 +40,12 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getUsers() {
-        List<User> users = userService.getUsers();
+        CustomInvocationHandler customInvocationHandler = new CustomInvocationHandler(userService);
+
+        UserService o = (UserService) Proxy.newProxyInstance(CustomInvocationHandler.class.getClassLoader(),
+                new Class[]{UserService.class}, customInvocationHandler);
+        List<User> users = o.getUsers();
+
         return userDtoConverter.toDto(users);
     }
 

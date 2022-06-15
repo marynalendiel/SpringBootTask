@@ -18,7 +18,7 @@ import java.util.List;
 @Aspect
 @Component
 public class UserAspect {
-    Logger logger = LogManager.getLogger(UserAspect.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserAspect.class);
     @Pointcut("@annotation(com.example.springboottask.service.Snapshot)")
     public void snapshotMethods() {}
 
@@ -26,27 +26,27 @@ public class UserAspect {
     public void logMethod(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         List<Object> methodParam = Arrays.asList(joinPoint.getArgs());
-        logger.info("(@Before) Executing method: {} with input param: {}", methodName, methodParam);
+        LOGGER.info("(@Before) Executing method: {} with input param: {}", methodName, methodParam);
     }
 
 //    @AfterReturning(pointcut = "@annotation(com.example.springboottask.service.Snapshot)",
     @AfterReturning(pointcut = "execution(* com.example.springboottask.service.UserServiceImpl.*(..))", returning = "result")
     public void afterReturningAdvice(JoinPoint joinPoint, List<User> result) {
         String methodName = joinPoint.getSignature().getName();
-        logger.info("(@AfterReturning) Executing method: {} with input param: {}", methodName, result);
+        LOGGER.info("(@AfterReturning) Executing method: {} with input param: {}", methodName, result);
     }
 
     @Around("execution(* com.example.springboottask.service.UserServiceImpl.*(..))")
     public Object aroundAdvice(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         String methodName = proceedingJoinPoint.getSignature().getName();
-        logger.info("(@Around) Executing method: {}", methodName);
+        LOGGER.info("(@Around) Executing method: {}", methodName);
 
         long start = System.currentTimeMillis();
 
         Object result = proceedingJoinPoint.proceed();
 
         long duration = System.currentTimeMillis() - start;
-        logger.info("(@Around) Duration: {} seconds", duration / 1000.0);
+        LOGGER.info("(@Around) Duration: {} seconds", duration / 1000.0);
 
         return result;
     }

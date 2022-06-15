@@ -5,6 +5,7 @@ import com.example.springboottask.model.User;
 import java.util.List;
 
 public interface UserService {
+    @Snapshot
     List<User> getUsers();
 
     void saveUser(User user);
