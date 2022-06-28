@@ -1,8 +1,10 @@
 package com.example.springboottask.service;
 
-import com.example.springboottask.entity.User;
-import com.example.springboottask.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.example.springboottask.controller.EntityResultNotFoundException;
+import com.example.springboottask.converter.UserEntityConverter;
+import com.example.springboottask.entity.UserEntity;
+import com.example.springboottask.model.User;
+import com.example.springboottask.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,35 +12,22 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepo userRepository;
+    private final UserRepository userRepository;
 
-    public UserServiceImpl(@Qualifier("jpa") UserRepo userRepository) {
+    private final UserEntityConverter userEntityConverter;
+
+    public UserServiceImpl(UserRepository userRepository, UserEntityConverter userEntityConverter) {
         this.userRepository = userRepository;
+        this.userEntityConverter = userEntityConverter;
     }
 
     @Override
     public List<User> getUsers() {
-        return userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findAll();
+        return userEntityConverter.toModel(userEntities);
     }
 
-    @Override
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
-
-    @Override
-    public User updateUser(User user) {
-        User userFromDb = userRepository.findById(user.getId());
-//        .get();
-
-        userFromDb.setFirstName(user.getFirstName());
-        userFromDb.setLastName(user.getLastName());
-        userFromDb.setCity(user.getCity());
-        userRepository.save(userFromDb);
-
-        return userFromDb;
-    }
-
+    @Snapshot
     @Override
     public User getUser(Long userId) {
 //        return userRepository.findById(userId).orElseThrow(
@@ -52,8 +41,32 @@ public class UserServiceImpl implements UserService {
 //                    }
 //                }
 //        );
+        return userRepository.findById(userId)
+                .map(userEntityConverter::toModel)
+                .orElseThrow(() -> new EntityResultNotFoundException("User not found"));
+    }
 
-        return userRepository.findById(userId);
+    @Snapshot
+    @Override
+    public void saveUser(User user) {
+        UserEntity userEntity = userEntityConverter.toEntity(user);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        UserEntity userEntity = userEntityConverter.toEntity(user);
+
+        User userFromDb = userRepository.findById(userEntity.getId())
+                .map(userEntityConverter::toModel)
+                .orElseThrow(() -> new EntityResultNotFoundException("must updated user not found"));
+
+        userFromDb.setFirstName(userEntity.getFirstName());
+        userFromDb.setLastName(userEntity.getLastName());
+        userFromDb.setCity(userEntity.getCity());
+        userRepository.save(userEntityConverter.toEntity(userFromDb));
+
+        return userFromDb;
     }
 
     @Override

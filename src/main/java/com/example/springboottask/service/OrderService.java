@@ -1,6 +1,6 @@
 package com.example.springboottask.service;
 
-import com.example.springboottask.entity.Order;
+import com.example.springboottask.model.Order;
 
 import java.util.List;
 

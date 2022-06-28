@@ -1,6 +1,6 @@
 package com.example.springboottask.service;
 
-import com.example.springboottask.entity.User;
+import com.example.springboottask.model.User;
 
 import java.util.List;
 

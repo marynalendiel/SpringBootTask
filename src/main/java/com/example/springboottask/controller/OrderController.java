@@ -1,6 +1,8 @@
 package com.example.springboottask.controller;
 
-import com.example.springboottask.entity.Order;
+import com.example.springboottask.converter.OrderDtoConverter;
+import com.example.springboottask.dto.OrderDto;
+import com.example.springboottask.model.Order;
 import com.example.springboottask.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,34 +22,34 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
 
-    @GetMapping("/")
-    public List<Order> getOrders() {
+    private final OrderDtoConverter orderDtoConverter;
 
-        return orderService.getOrders();
+    @GetMapping
+    public List<OrderDto> getOrders() {
+        List<Order> orders = orderService.getOrders();
+        return orderDtoConverter.toDto(orders);
     }
 
     @GetMapping("/{orderId}")
-    public Order getOrder(@PathVariable Long orderId) {
-
+    public OrderDto getOrder(@PathVariable Long orderId) {
         Order order = orderService.getOrder(orderId);
-
-        if (order == null) {
-            throw new EntityResultNotFoundException("order id not found - " + orderId);
-        }
-
-        return order;
+        return orderDtoConverter.toDto(order);
     }
 
-    @PostMapping("/")
-    public Order addOrder(@RequestBody Order order) {
+    @PostMapping
+    public OrderDto addOrder(@RequestBody OrderDto orderDto) {
+        Order order = orderDtoConverter.toModel(orderDto);
         orderService.saveOrder(order);
 
-        return order;
+        return orderDto;
     }
 
-    @PutMapping("/")
-    public Order updateOrder(@RequestBody Order order) {
-        return orderService.updateOrder(order);
+    @PutMapping
+    public OrderDto updateOrder(@RequestBody OrderDto orderDto) {
+        var requestOrder = orderDtoConverter.toModel(orderDto);
+
+        var updatedOrder = orderService.updateOrder(requestOrder);
+        return orderDtoConverter.toDto(updatedOrder);
 
     }
 

@@ -1,6 +1,9 @@
 package com.example.springboottask.entity;
 
+import org.apache.commons.collections4.ListUtils;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +12,8 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(String[] args) {
-        List<String> items1 = Arrays.asList("1", "2");
+//        List<String> items1 = Arrays.asList("1", "2");
+        List<String> items1 = List.of("1", "2");
         List<String> items2 = Arrays.asList("3", "4");
         Order2 o1 = new Order2();
         o1.setItems(items1);
@@ -32,9 +36,17 @@ public class Main {
     }
 
     public static List<String> getItems(List<User2> users) {
-        if (users == null) {
-            return Collections.emptyList();
-        }
+//        if (users == null) {
+//            return Collections.emptyList();
+//        }
+//        return users.stream()
+//                .filter(Objects::nonNull)
+//                .flatMap(user -> user.getOrders() != null ? user.getOrders().stream() : null)
+//                .filter(Objects::nonNull)
+//                .flatMap(order -> order.getItems() != null ? order.getItems().stream() : null)
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+
 //        return users.stream()
 //                .filter(Objects::nonNull)
 //                .flatMap(user -> {
@@ -53,11 +65,23 @@ public class Main {
 //                .filter(Objects::nonNull)
 //                .collect(Collectors.toList());
 
-        return users.stream()
+//        return ListUtils.emptyIfNull(users).stream()
+//                .filter(Objects::nonNull)
+//                .flatMap(user -> user.getOrders() != null ? user.getOrders().stream() : null)
+//                .filter(Objects::nonNull)
+//                .flatMap(order -> order.getItems() != null ? order.getItems().stream() : null)
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+
+        return ListUtils.emptyIfNull(users).stream()
                 .filter(Objects::nonNull)
-                .flatMap(user -> user.getOrders() != null ? user.getOrders().stream() : null)
+                .map(User2::getOrders)
                 .filter(Objects::nonNull)
-                .flatMap(order -> order.getItems() != null ? order.getItems().stream() : null)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .map(Order2::getItems)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

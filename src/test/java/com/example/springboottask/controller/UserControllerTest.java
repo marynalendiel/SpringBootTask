@@ -1,25 +1,28 @@
 package com.example.springboottask.controller;
 
-import com.example.springboottask.entity.Order;
-import com.example.springboottask.entity.User;
+import com.example.springboottask.converter.ConverterTestConfiguration;
+import com.example.springboottask.converter.OrderDtoConverter;
+import com.example.springboottask.converter.UserDtoConverter;
+import com.example.springboottask.converter.UserEntityConverter;
+import com.example.springboottask.model.Order;
+import com.example.springboottask.model.User;
 import com.example.springboottask.service.OrderService;
 import com.example.springboottask.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,8 +33,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class) //slice
+@WebMvcTest(UserController.class)
+@ContextConfiguration(classes = ConverterTestConfiguration.class)
 class UserControllerTest {
+
+    @Autowired
+    UserController userController;
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,6 +48,15 @@ class UserControllerTest {
 
     @MockBean
     private OrderService orderService;
+
+    @SpyBean
+    private UserDtoConverter userDtoConverter;
+
+    @SpyBean
+    private UserEntityConverter userEntityConverter;
+
+    @SpyBean
+    private OrderDtoConverter orderDtoConverter;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -52,8 +68,8 @@ class UserControllerTest {
         when(userService.getUsers()).thenReturn(users);
 
         final String expectedResponseContent = objectMapper.writeValueAsString(users);
+
         this.mockMvc.perform(get("/api/users"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseContent));
     }
@@ -67,7 +83,9 @@ class UserControllerTest {
         when(userService.getUser(2L)).thenReturn(user);
 
         //when
-        this.mockMvc.perform(get("/api/users/2"))
+        this.mockMvc.perform(get("/api/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseContent));
@@ -112,6 +130,7 @@ class UserControllerTest {
     @Test
     void deleteUser() throws Exception {
         User user = createUser();
+
         when(userService.getUser(2L)).thenReturn(user);
 
         this.mockMvc
